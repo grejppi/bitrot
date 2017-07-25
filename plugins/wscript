@@ -1,0 +1,88 @@
+#!/usr/bin/env python
+
+top = '..'
+
+import sys
+
+def build(bld):
+    def w32_flags(bld, target):
+        return ''
+        if bld.env.PLATFORM == 'win32':
+            return '-Wl,--out-implib,{0}.a'.format(target)
+        else:
+            return ''
+
+    plugins = ['Reverser', 'Tapestop', 'Crush', 'Repeat']
+    formats = [('ladspa', 'bitrot_{0}'), ('vst', 'bitrot_{0}_vst')]
+    bundle = 'bitrot.lv2'
+
+    import os.path
+    import inspect
+    ttlgen = os.path.dirname(os.path.abspath(inspect.stack()[0][1]))
+    ttlgen = os.path.join(ttlgen, 'ttlgen.py')
+
+    ttls = []
+
+    for plugin_name in plugins:
+        source = '{0}/Bitrot{0}.cpp'.format(plugin_name)
+        plugin = plugin_name.lower()
+
+        for format, target in formats:
+            target = target.format(plugin)
+
+            # bloody windows tho
+            w32 = w32_flags(bld, target)
+
+            bld.shlib(features     = 'cxx cxxshlib',
+                      source       = [source],
+                      includes     = ['../DPF/distrho', plugin_name, '../common'],
+                      cxxflags     = ['-DDISTRHO_PLUGIN_TARGET_{0}'.format(format.upper())],
+                      name         = '{0} ({1})'.format(plugin, format.upper()),
+                      target       = target,
+                      install_path = '${{PREFIX}}/lib/{0}'.format(format))
+
+        target = '{0}/{1}'.format(bundle, plugin)
+        w32 = w32_flags(bld, plugin)
+
+        lv2 = bld.shlib(features     = 'cxx cxxshlib',
+                        source       = [source],
+                        includes     = ['../DPF/distrho', plugin_name, '../common'],
+                        cxxflags     = ['-DDISTRHO_PLUGIN_TARGET_LV2'],
+                        name         = '{0} (LV2)'.format(plugin),
+                        target       = target,
+                        install_path = '${{PREFIX}}/lib/lv2/{0}'.format(bundle))
+
+        extension = bld.env.cxxshlib_PATTERN
+        extension = '"' + extension[(extension.rfind('.') + 1):] + '"'
+        ttlsrc = bld.shlib(features     = 'cxx cxxshlib',
+                           source       = [source],
+                           includes     = ['../DPF/distrho', plugin_name, '../common'],
+                           cxxflags     = ['-DDISTRHO_PLUGIN_TARGET_LV2',
+                                           '-DDISTRHO_DLL_EXTENSION={0}'.format(extension)],
+                           ldflags      = [],
+                           name         = '{0} (LV2 manifest generator)'.format(plugin),
+                           target       = 'ttlgen/{0}'.format(plugin),
+                           install_path = None)
+
+        # Restore the original environment for the TTL generator
+        for k in ttlsrc.env.keys():
+            del ttlsrc.env[k]
+        ttlsrc.env.load('build/default_env')
+        ttlsrc.cxxshlib_PATTERN = '%s.so'
+
+        ttl = bld(features     = 'seq',
+                  rule         = '{0} ${{SRC}} {1}'.format(ttlgen, plugin),
+                  source       = 'ttlgen/{0}'.format(ttlsrc.env.cxxshlib_PATTERN % plugin),
+                  target       = '{0}/{1}.ttl'.format(bundle, plugin),
+                  install_path = '${{PREFIX}}/lib/lv2/{0}'.format(bundle),
+                  name         = '{0}.ttl'.format(plugin),
+                  use          = ttlsrc.get_name(),
+                  cwd          = os.path.join(bld.out_dir, 'plugins', bundle))
+        ttls.append(ttl)
+
+    manifest = bld(features     = 'seq',
+                   rule         = ttlgen,
+                   target       = '{0}/manifest.ttl'.format(bundle),
+                   install_path = '${{PREFIX}}/lib/lv2/{0}'.format(bundle),
+                   name         = 'manifest.ttl',
+                   cwd          = os.path.join(bld.out_dir, 'plugins', bundle))
