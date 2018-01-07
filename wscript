@@ -31,7 +31,7 @@ def configure(conf):
         conf.env.append_value('CXXFLAGS', ['-DkParameterIsTrigger=0'])
 
     conf.load('compiler_cxx')
-    conf.env.store('build/default_env')
+    conf.env.store('.default_env')
 
     cxxflags = []
     ldflags = []
