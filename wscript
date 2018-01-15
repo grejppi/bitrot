@@ -24,7 +24,7 @@ def options(opt):
                    help='use upstream (non-customized) version of DPF')
 
 def configure(conf):
-    conf.env.append_value('CXXFLAGS', ['-std=c++11'])
+    conf.env.append_value('CXXFLAGS', ['-std=c++11', '-fvisibility=hidden', '-O2'])
     if conf.options.use_upstream_dpf:
         conf.env.append_value('CXXFLAGS',
             ['-DkParameterIsAutomatable=kParameterIsAutomable'])
