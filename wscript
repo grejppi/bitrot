@@ -33,6 +33,13 @@ def configure(conf):
             ['-DkParameterIsAutomatable=kParameterIsAutomable'])
         conf.env.append_value('CXXFLAGS', ['-DkParameterIsTrigger=0'])
 
+    major, minor, micro = VERSION.split('.')
+    conf.env.append_value('CXXFLAGS', [
+        '-DBITROT_VERSION_MAJOR={}'.format(major),
+        '-DBITROT_VERSION_MINOR={}'.format(minor),
+        '-DBITROT_VERSION_MICRO={}'.format(micro),
+    ])
+
     conf.load('compiler_cxx')
     conf.env.store('.default_env')
 

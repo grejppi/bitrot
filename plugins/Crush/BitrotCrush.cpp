@@ -19,6 +19,7 @@
 #include "DistrhoPlugin.hpp"
 #include "Label.hpp"
 #include "Lerp.hpp"
+#include "Version.hpp"
 
 #include <random>
 
@@ -117,7 +118,7 @@ protected:
     }
 
     uint32_t getVersion() const override {
-        return d_version(0, 7, 0);
+        return BITROT_VERSION();
     }
 
     int64_t getUniqueId() const override {
