@@ -17,6 +17,7 @@
  */
 
 #include "DistrhoPlugin.hpp"
+#include "Label.hpp"
 #include "ToggledValue.hpp"
 
 #include <cmath>
@@ -62,7 +63,7 @@ public:
 
 protected:
     const char* getLabel() const override {
-        return "reverser";
+        return LABEL("reverser");
     }
 
     const char* getDescription() const override {

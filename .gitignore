@@ -2,3 +2,4 @@ build
 .*waf*
 .vagrant/*
 .default_env
+waf3-*/*

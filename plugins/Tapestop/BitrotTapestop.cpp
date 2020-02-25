@@ -17,6 +17,7 @@
  */
 
 #include "DistrhoPlugin.hpp"
+#include "Label.hpp"
 #include "Lerp.hpp"
 #include "ToggledValue.hpp"
 
@@ -73,7 +74,7 @@ public:
 
 protected:
     const char* getLabel() const override {
-        return "tapestop";
+        return LABEL("tapestop");
     }
 
     const char* getDescription() const override {

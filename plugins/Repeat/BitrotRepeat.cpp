@@ -17,6 +17,7 @@
  */
 
 #include "DistrhoPlugin.hpp"
+#include "Label.hpp"
 #include "Lerp.hpp"
 #include "ToggledValue.hpp"
 
@@ -96,7 +97,7 @@ public:
 
 protected:
     const char* getLabel() const override {
-        return "repeat";
+        return LABEL("repeat");
     }
 
     const char* getDescription() const override {

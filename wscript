@@ -6,7 +6,7 @@ top = '.'
 out = 'build'
 
 APPNAME = 'bitrot'
-VERSION = '0.7.0'
+VERSION = '0.7.1'
 
 import sys
 import os

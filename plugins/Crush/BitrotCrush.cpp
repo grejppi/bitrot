@@ -17,6 +17,7 @@
  */
 
 #include "DistrhoPlugin.hpp"
+#include "Label.hpp"
 #include "Lerp.hpp"
 
 #include <random>
@@ -100,7 +101,7 @@ public:
 
 protected:
     const char* getLabel() const override {
-        return "crush";
+        return LABEL("crush");
     }
 
     const char* getDescription() const override {
