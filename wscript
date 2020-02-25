@@ -13,6 +13,9 @@ import os
 import re
 import shutil
 
+from waflib.Tools.compiler_cxx import cxx_compiler
+cxx_compiler['win32'].remove('msvc')
+
 def options(opt):
     opt.load('compiler_cxx')
     opt.add_option('-p', '--platform', dest='platform', default=None,
@@ -70,7 +73,6 @@ def configure(conf):
     conf.env.LINK_CXX = toolchain + 'g++'
     conf.load('compiler_cxx')
 
-    from waflib.Tools.compiler_cxx import cxx_compiler
     cxx_compiler[sys.platform] = toolchain + 'gcc'
 
     if conf.env.PLATFORM.startswith('win32'):
