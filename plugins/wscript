@@ -78,7 +78,7 @@ def build(bld):
         metasrc.env.load('.default_env')
 
         ttl = bld(features     = 'seq',
-                  rule         = '{0} ${{SRC}}'.format(ttlgen),
+                  rule         = '"{0}" "{1}" ${{SRC}}'.format(sys.executable, ttlgen),
                   source       = 'metagen/{0}'.format(metasrc.env.cxxprogram_PATTERN % plugin),
                   target       = ['{0}/{1}.ttl'.format(bundle, plugin),
                                   '{0}/manifest.{1}.ttl'.format(bundle, plugin)],
@@ -104,7 +104,7 @@ def build(bld):
     )
 
     manifest = bld(features     = 'seq',
-                   rule         = ttlgen,
+                   rule         = '"{0}" "{1}"'.format(sys.executable, ttlgen),
                    target       = '{0}/manifest.ttl'.format(bundle),
                    source       = ['{0}/manifest.{1}.ttl'.format(bundle, x.lower()) for x in plugins],
                    install_path = '${{PREFIX}}/lib/lv2/{0}'.format(bundle),
