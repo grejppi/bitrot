@@ -35,9 +35,9 @@ def configure(conf):
 
     major, minor, micro = VERSION.split('.')
     conf.env.append_value('CXXFLAGS', [
-        '-DBITROT_VERSION_MAJOR={}'.format(major),
-        '-DBITROT_VERSION_MINOR={}'.format(minor),
-        '-DBITROT_VERSION_MICRO={}'.format(micro),
+        '-DBITROT_VERSION_MAJOR={0}'.format(major),
+        '-DBITROT_VERSION_MINOR={0}'.format(minor),
+        '-DBITROT_VERSION_MICRO={0}'.format(micro),
     ])
 
     conf.load('compiler_cxx')

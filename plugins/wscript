@@ -53,36 +53,62 @@ def build(bld):
                         install_path = '${{PREFIX}}/lib/lv2/{0}'.format(bundle))
 
         extension = bld.env.cxxshlib_PATTERN
-        extension = '"' + extension[(extension.rfind('.') + 1):] + '"'
-        ttlsrc = bld.shlib(features     = 'cxx cxxshlib',
-                           source       = [source],
-                           includes     = ['../DPF/distrho', plugin_name, '../common'],
-                           cxxflags     = ['-DDISTRHO_PLUGIN_TARGET_LV2',
-                                           '-DDISTRHO_DLL_EXTENSION={0}'.format(extension)],
-                           ldflags      = [],
-                           name         = '{0} (LV2 manifest generator)'.format(plugin),
-                           target       = 'ttlgen/{0}'.format(plugin),
-                           install_path = None)
+        extension = extension[(extension.rfind('.') + 1):]
+        metasrc = bld(features     = 'cxx cxxprogram',
+                      source       = [source,
+                                      '../common/MetadataGenerator.cpp'],
+                      includes     = ['../DPF/distrho', plugin_name, '../common'],
+                      cxxflags     = ['-DDISTRHO_PLUGIN_TARGET_LV2',
+                                      '-DBITROT_BINARY_NAME="{0}.{1}"'.format(
+                                          plugin,
+                                          extension,
+                                      ),
+                                      '-DBITROT_TTL_NAME="{0}.ttl"'.format(
+                                          plugin,
+                                      ),
+                                      '-Dprotected=public'],  # ...pretend you didn't see that
+                      ldflags      = [],
+                      name         = '{0} (LV2 metadata generator)'.format(plugin),
+                      target       = 'metagen/{0}'.format(plugin),
+                      install_path = None)
 
-        # Restore the original environment for the TTL generator
-        for k in ttlsrc.env.keys():
-            del ttlsrc.env[k]
-        ttlsrc.env.load('.default_env')
-        ttlsrc.cxxshlib_PATTERN = '%s.so'
+        # Restore the original environment for the metadata generator
+        for k in metasrc.env.keys():
+            del metasrc.env[k]
+        metasrc.env.load('.default_env')
 
         ttl = bld(features     = 'seq',
-                  rule         = '{0} ${{SRC}} {1}'.format(ttlgen, plugin),
-                  source       = 'ttlgen/{0}'.format(ttlsrc.env.cxxshlib_PATTERN % plugin),
-                  target       = '{0}/{1}.ttl'.format(bundle, plugin),
+                  rule         = '{0} ${{SRC}}'.format(ttlgen),
+                  source       = 'metagen/{0}'.format(metasrc.env.cxxprogram_PATTERN % plugin),
+                  target       = ['{0}/{1}.ttl'.format(bundle, plugin),
+                                  '{0}/manifest.{1}.ttl'.format(bundle, plugin)],
                   install_path = '${{PREFIX}}/lib/lv2/{0}'.format(bundle),
                   name         = '{0}.ttl'.format(plugin),
-                  use          = ttlsrc.get_name(),
+                  use          = metasrc.get_name(),
                   cwd          = os.path.join(bld.out_dir, 'plugins', bundle))
         ttls.append(ttl)
+
+        bld.add_manual_dependency(
+            bld.path.find_or_declare('{0}/manifest.ttl'.format(bundle)),
+            bld.path.find_or_declare('{0}/manifest.{1}.ttl'.format(bundle, plugin)),
+        )
+
+        bld.add_manual_dependency(
+            bld.path.find_or_declare('{0}/{1}.ttl'.format(bundle, plugin)),
+            bld.path.find_or_declare(ttlgen),
+        )
+
+    bld.add_manual_dependency(
+        bld.path.find_or_declare('{0}/manifest.ttl'.format(bundle, plugin)),
+        bld.path.find_or_declare(ttlgen),
+    )
 
     manifest = bld(features     = 'seq',
                    rule         = ttlgen,
                    target       = '{0}/manifest.ttl'.format(bundle),
+                   source       = ['{0}/manifest.{1}.ttl'.format(bundle, x.lower()) for x in plugins],
                    install_path = '${{PREFIX}}/lib/lv2/{0}'.format(bundle),
                    name         = 'manifest.ttl',
+                   use          = ttl,
                    cwd          = os.path.join(bld.out_dir, 'plugins', bundle))
+

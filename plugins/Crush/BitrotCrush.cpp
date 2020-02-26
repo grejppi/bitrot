@@ -114,7 +114,7 @@ protected:
     }
 
     const char* getLicense() const override {
-        return "Apache 2.0";
+        return "Apache-2.0";
     }
 
     uint32_t getVersion() const override {

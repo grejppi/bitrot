@@ -2,4 +2,5 @@ build
 .*waf*
 .vagrant/*
 .default_env
+.vscode
 waf3-*/*
