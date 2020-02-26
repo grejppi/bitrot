@@ -13,6 +13,16 @@ import os
 import re
 import shutil
 
+try:
+    which = shutil.which
+except AttributeError:
+    from distutils.spawn import find_executable
+    def which(cmd, mode=os.F_OK | os.X_OK, path=None):
+        path = find_executable(cmd, path)
+        if os.access(path, mode):
+            return path
+        return None
+
 from waflib.Tools.compiler_cxx import cxx_compiler
 cxx_compiler['win32'].remove('msvc')
 
@@ -75,9 +85,9 @@ def configure(conf):
 
     conf.env.append_value('CXXFLAGS', cxxflags)
     conf.env.append_value('LINKFLAGS', ldflags)
-    conf.env.AR       = toolchain + 'ar'
-    conf.env.CXX      = toolchain + 'g++'
-    conf.env.LINK_CXX = toolchain + 'g++'
+    conf.env.AR       = which(toolchain + 'ar')
+    conf.env.CXX      = which(toolchain + 'g++')
+    conf.env.LINK_CXX = which(toolchain + 'g++')
     conf.load('compiler_cxx')
 
     cxx_compiler[sys.platform] = toolchain + 'gcc'

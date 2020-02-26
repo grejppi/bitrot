@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 
 import glob
 import json
@@ -10,6 +10,13 @@ import os.path
 
 from collections import deque
 
+def is_string(s):
+    if isinstance(s, str):
+        return True
+    try:
+        return isinstance(s, unicode)
+    except NameError:
+        return False
 
 class TurtleWriter:
     @staticmethod
@@ -126,7 +133,7 @@ class Subject(Syntax):
             self.tokens.append(Token.Semicolon)
         self.tokens.append(Token.Whatever)
         self.strings.append(predicate)
-        if isinstance(object, str):
+        if is_string(object):
             object = Object().value(object)
         self.merge(object)
         return self
@@ -139,7 +146,7 @@ class Object(Syntax):
     def value(self, object):
         if len(self.tokens) != 0:
             self.tokens.append(Token.Comma)
-        if isinstance(object, str):
+        if is_string(object):
             self.tokens.append(Token.Whatever)
             self.strings.append(object)
         elif isinstance(object, Subject):
