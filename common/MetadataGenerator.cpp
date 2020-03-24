@@ -77,6 +77,7 @@ public:
             tokens.push_back(Comma);
         }
         merge(item);
+        return *this;
     }
 };
 
@@ -87,13 +88,14 @@ public:
     Object(const Object&) = delete;
     virtual ~Object() {}
 
-    Array& item(std::string key, Syntax& item) {
+    Object& item(std::string key, Syntax& item) {
         if (tokens.size() != 0) {
             tokens.push_back(Comma);
         }
         merge(Syntax().string(key));
         tokens.push_back(Colon);
         merge(item);
+        return *this;
     }
 };
 
