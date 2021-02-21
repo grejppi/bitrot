@@ -174,7 +174,7 @@ protected:
                 }
 
                 int advance = toggledValue(params.switchDir) ? 1 : -1;
-                readPos = (readPos + advance) % lbuffer.size();
+                readPos = (readPos + advance + lbuffer.size()) % lbuffer.size();
                 outputs[0][i] = lbuffer[readPos];
                 outputs[1][i] = rbuffer[readPos];
             } else {
