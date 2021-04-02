@@ -1,4 +1,5 @@
 build
+bin
 .*waf*
 .vagrant/*
 .default_env
