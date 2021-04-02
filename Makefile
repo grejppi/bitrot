@@ -16,6 +16,9 @@ ifeq ($(HAVE_DGL),true)
 endif
 
 plugins: dgl
+	$(MAKE) all -C plugins/Crush
+	$(MAKE) all -C plugins/Repeat
+	$(MAKE) all -C plugins/Reverser
 	$(MAKE) all -C plugins/Tapestop
 
 ifneq ($(CROSS_COMPILING),true)
@@ -36,6 +39,9 @@ endif
 clean:
 	$(MAKE) clean -C dpf/dgl
 	$(MAKE) clean -C dpf/utils/lv2-ttl-generator
+	$(MAKE) clean -C plugins/Crush
+	$(MAKE) clean -C plugins/Repeat
+	$(MAKE) clean -C plugins/Reverser
 	$(MAKE) clean -C plugins/Tapestop
 	rm -rf bin build
 

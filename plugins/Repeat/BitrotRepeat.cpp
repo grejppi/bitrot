@@ -26,14 +26,12 @@
 #include <iostream>
 #include <vector>
 
-#include "DistrhoPluginMain.cpp"
-
 
 START_NAMESPACE_DISTRHO
 
 class BitrotRepeat : public Plugin {
     static constexpr uint32_t NUM_PARAMS = 10;
-    static constexpr uint32_t OVERSAMPLING = 32;
+    static constexpr int OVERSAMPLING = 32;
 
     struct LerpParams {
         float speed;
@@ -124,7 +122,7 @@ protected:
     void initParameter(uint32_t index, Parameter& p) override {
         switch (index) {
         case 0:
-            p.hints  = kParameterIsAutomatable | kParameterIsBoolean;
+            p.hints  = kParameterIsAutomable | kParameterIsBoolean;
             p.name   = "Active";
             p.symbol = "active";
 
@@ -133,7 +131,7 @@ protected:
             p.ranges.def = 0.f;
             break;
         case 1:
-            p.hints  = kParameterIsAutomatable | kParameterIsInteger;
+            p.hints  = kParameterIsAutomable | kParameterIsInteger;
             p.name   = "BPM";
             p.symbol = "bpm";
 
@@ -142,7 +140,7 @@ protected:
             p.ranges.def = 100.f;
             break;
         case 2:
-            p.hints  = kParameterIsAutomatable | kParameterIsInteger;
+            p.hints  = kParameterIsAutomable | kParameterIsInteger;
             p.name   = "Beats";
             p.symbol = "beats";
 
@@ -151,7 +149,7 @@ protected:
             p.ranges.def = 2.f;
             break;
         case 3:
-            p.hints  = kParameterIsAutomatable | kParameterIsInteger;
+            p.hints  = kParameterIsAutomable | kParameterIsInteger;
             p.name   = "Division";
             p.symbol = "division";
 
@@ -160,7 +158,7 @@ protected:
             p.ranges.def =  4.f;
             break;
         case 4:
-            p.hints  = kParameterIsAutomatable | kParameterIsBoolean | kParameterIsTrigger;
+            p.hints  = kParameterIsAutomable | kParameterIsBoolean | kParameterIsTrigger;
             p.name   = "Retrigger";
             p.symbol = "retrigger";
 
@@ -169,7 +167,7 @@ protected:
             p.ranges.def = 0.f;
             break;
         case 5:
-            p.hints  = kParameterIsAutomatable;
+            p.hints  = kParameterIsAutomable;
             p.name   = "Attack";
             p.symbol = "attack";
 
@@ -178,7 +176,7 @@ protected:
             p.ranges.def = 0.f;
             break;
         case 6:
-            p.hints  = kParameterIsAutomatable;
+            p.hints  = kParameterIsAutomable;
             p.name   = "Hold";
             p.symbol = "hold";
 
@@ -187,7 +185,7 @@ protected:
             p.ranges.def = 1.f;
             break;
         case 7:
-            p.hints  = kParameterIsAutomatable;
+            p.hints  = kParameterIsAutomable;
             p.name   = "Release";
             p.symbol = "release";
 
@@ -196,7 +194,7 @@ protected:
             p.ranges.def = 1.f;
             break;
         case 8:
-            p.hints  = kParameterIsAutomatable | kParameterIsBoolean;
+            p.hints  = kParameterIsAutomable | kParameterIsBoolean;
             p.name   = "Varispeed";
             p.symbol = "varispeed";
 
@@ -205,7 +203,7 @@ protected:
             p.ranges.def = 0.f;
             break;
         case 9:
-            p.hints  = kParameterIsAutomatable | kParameterIsLogarithmic;
+            p.hints  = kParameterIsAutomable | kParameterIsLogarithmic;
             p.name   = "Speed";
             p.symbol = "speed";
 
@@ -324,7 +322,7 @@ protected:
     void run(const float** inputs, float** outputs, uint32_t nframes) override {
         Lerp speed { params.old.speed, params.current.speed, (float) nframes };
 
-        int bufSize = lbuffer.size();
+        uint32_t bufSize = lbuffer.size();
 
         if (toggledValue(params.active)) {
             if (writePos < bufSize) {

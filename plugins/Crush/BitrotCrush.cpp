@@ -23,8 +23,6 @@
 
 #include <random>
 
-#include "DistrhoPluginMain.cpp"
-
 
 START_NAMESPACE_DISTRHO
 
@@ -128,7 +126,7 @@ protected:
     void initParameter(uint32_t index, Parameter& p) override {
         switch (index) {
         case 0:
-            p.hints  = kParameterIsAutomatable | kParameterIsInteger;
+            p.hints  = kParameterIsAutomable | kParameterIsInteger;
             p.name   = "Downsample";
             p.symbol = "downsample";
 
@@ -137,7 +135,7 @@ protected:
             p.ranges.def =  1.f;
             break;
         case 1:
-            p.hints  = kParameterIsAutomatable;
+            p.hints  = kParameterIsAutomable;
             p.name   = "Noise Bias";
             p.symbol = "noisebias";
 
@@ -146,7 +144,7 @@ protected:
             p.ranges.def = 0.5f;
             break;
         case 2:
-            p.hints  = kParameterIsAutomatable;
+            p.hints  = kParameterIsAutomable;
             p.name   = "Input Noise";
             p.symbol = "prenoise";
 
@@ -155,7 +153,7 @@ protected:
             p.ranges.def = 0.f;
             break;
         case 3:
-            p.hints  = kParameterIsAutomatable;
+            p.hints  = kParameterIsAutomable;
             p.name   = "Output Noise";
             p.symbol = "postnoise";
 
@@ -164,7 +162,7 @@ protected:
             p.ranges.def = 0.f;
             break;
         case 4:
-            p.hints  = kParameterIsAutomatable;
+            p.hints  = kParameterIsAutomable;
             p.name   = "Distort";
             p.symbol = "distort";
 
@@ -173,7 +171,7 @@ protected:
             p.ranges.def = 0.f;
             break;
         case 5:
-            p.hints  = kParameterIsAutomatable;
+            p.hints  = kParameterIsAutomable;
             p.name   = "Post Clip";
             p.symbol = "postclip";
 

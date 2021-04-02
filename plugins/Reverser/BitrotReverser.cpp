@@ -24,8 +24,6 @@
 #include <cmath>
 #include <vector>
 
-#include "DistrhoPluginMain.cpp"
-
 
 START_NAMESPACE_DISTRHO
 
@@ -90,7 +88,7 @@ protected:
     void initParameter(uint32_t index, Parameter& p) override {
         switch (index) {
         case 0:
-            p.hints  = kParameterIsAutomatable | kParameterIsBoolean;
+            p.hints  = kParameterIsAutomable | kParameterIsBoolean;
             p.name   = "Active";
             p.symbol = "active";
 
@@ -99,7 +97,7 @@ protected:
             p.ranges.def = 0.f;
             break;
         case 1:
-            p.hints  = kParameterIsAutomatable;
+            p.hints  = kParameterIsAutomable;
             p.name   = "Switch Direction";
             p.symbol = "switch";
 
@@ -152,7 +150,7 @@ protected:
 
     void run(const float** inputs, float** outputs, uint32_t nframes) override {
         bool playing(toggledValue(params.active));
-        int bufSize = lwork.size();
+        int32_t bufSize = lwork.size();
 
         for (uint32_t i = 0; i < nframes; ++i) {
             int w(writePos % bufSize);
@@ -162,7 +160,7 @@ protected:
 
             if (playing) {
                 if (copied == -1) {
-                    for (uint32_t j = 0; j < bufSize; ++j) {
+                    for (int32_t j = 0; j < bufSize; ++j) {
                         lbuffer[j] = lwork[j];
                         rbuffer[j] = rwork[j];
                         copied = 0;
