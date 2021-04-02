@@ -25,9 +25,6 @@
 #include <cmath>
 #include <vector>
 
-#include "DistrhoPluginMain.cpp"
-
-
 START_NAMESPACE_DISTRHO
 
 class BitrotTapestop : public Plugin {
@@ -101,7 +98,7 @@ protected:
     void initParameter(uint32_t index, Parameter& p) override {
         switch (index) {
         case 0:
-            p.hints  = kParameterIsAutomatable | kParameterIsBoolean;
+            p.hints  = kParameterIsAutomable | kParameterIsBoolean;
             p.name   = "Active";
             p.symbol = "active";
 
@@ -110,7 +107,7 @@ protected:
             p.ranges.def = 0.f;
             break;
         case 1:
-            p.hints  = kParameterIsAutomatable;
+            p.hints  = kParameterIsAutomable;
             p.name   = "Speed";
             p.symbol = "speed";
 
@@ -119,7 +116,7 @@ protected:
             p.ranges.def = 0.5f;
             break;
         case 2:
-            p.hints  = kParameterIsAutomatable | kParameterIsBoolean;
+            p.hints  = kParameterIsAutomable | kParameterIsBoolean;
             p.name   = "Fade";
             p.symbol = "fade";
 

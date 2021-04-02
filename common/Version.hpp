@@ -1,5 +1,17 @@
 #pragma once
 
+#ifndef BITROT_VERSION_MAJOR
+#define BITROT_VERSION_MAJOR 0
+#endif
+
+#ifndef BITROT_VERSION_MINOR
+#define BITROT_VERSION_MINOR 0
+#endif
+
+#ifndef BITROT_VERSION_MICRO
+#define BITROT_VERSION_MICRO 1
+#endif
+
 #define BITROT_VERSION() d_version( \
     BITROT_VERSION_MAJOR, \
     BITROT_VERSION_MINOR, \
