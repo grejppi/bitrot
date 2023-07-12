@@ -49,6 +49,7 @@ def configure(conf):
         '-DBITROT_VERSION_MINOR={0}'.format(minor),
         '-DBITROT_VERSION_MICRO={0}'.format(micro),
     ])
+    conf.env.append_value('VERSION', VERSION)
 
     conf.load('compiler_cxx')
     conf.env.store('.default_env')

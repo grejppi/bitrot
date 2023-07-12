@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 top = '..'
 
@@ -22,6 +22,7 @@ def build(bld):
     ttlgen = os.path.join(ttlgen, 'ttlgen.py')
 
     ttls = []
+    tasks = {}
 
     for plugin_name in plugins:
         source = '{0}/Bitrot{0}.cpp'.format(plugin_name)
@@ -33,13 +34,14 @@ def build(bld):
             # bloody windows tho
             w32 = w32_flags(bld, target)
 
-            bld.shlib(features     = 'cxx cxxshlib',
-                      source       = [source],
-                      includes     = ['../DPF/distrho', plugin_name, '../common'],
-                      cxxflags     = ['-DDISTRHO_PLUGIN_TARGET_{0}'.format(format.upper())],
-                      name         = '{0} ({1})'.format(plugin, format.upper()),
-                      target       = target,
-                      install_path = '${{PREFIX}}/lib/{0}'.format(format))
+            t = bld.shlib(features     = 'cxx cxxshlib',
+                          source       = [source],
+                          includes     = ['../DPF/distrho', plugin_name, '../common'],
+                          cxxflags     = ['-DDISTRHO_PLUGIN_TARGET_{0}'.format(format.upper())],
+                          name         = '{0} ({1})'.format(plugin_name, format.upper()),
+                          target       = target,
+                          install_path = '${{PREFIX}}/lib/{0}'.format(format))
+            tasks[t.name] = t
 
         target = '{0}/{1}'.format(bundle, plugin)
         w32 = w32_flags(bld, plugin)
@@ -48,7 +50,7 @@ def build(bld):
                         source       = [source],
                         includes     = ['../DPF/distrho', plugin_name, '../common'],
                         cxxflags     = ['-DDISTRHO_PLUGIN_TARGET_LV2'],
-                        name         = '{0} (LV2)'.format(plugin),
+                        name         = '{0} (LV2)'.format(plugin_name),
                         target       = target,
                         install_path = '${{PREFIX}}/lib/lv2/{0}'.format(bundle))
 
@@ -112,3 +114,64 @@ def build(bld):
                    use          = ttl,
                    cwd          = os.path.join(bld.out_dir, 'plugins', bundle))
 
+    if bld.env.PLATFORM == 'darwin':
+        for plugin_name in plugins:
+            name = '{0} (VST)'.format(plugin_name)
+            vst = tasks[name]
+
+            vst_bundle = 'Bitrot {0}.vst'.format(plugin_name)
+            vst_bundle = bld.path.get_bld().make_node(vst_bundle)
+            vst_bundle.mkdir()
+
+            contents = vst_bundle.make_node('Contents')
+            contents.mkdir()
+
+            macos = contents.make_node('MacOS')
+            macos.mkdir()
+
+            resources = contents.make_node('Resources')
+            resources.mkdir()
+
+            pkginfo = contents.make_node('PkgInfo')
+            pkginfo.write('BNDL????\n')
+
+            dylib = bld.env.cxxshlib_PATTERN % vst.target
+            bld(features = 'seq',
+                rule     = 'cp ${SRC} ${TGT}',
+                source   = dylib,
+                target   = macos.make_node(dylib),
+                shell    = False,
+                use      = vst)
+
+            info_plist = contents.make_node('Info.plist')
+            info_plist.write(info_plist_template.format(
+                dylib=dylib,
+                name=plugin_name,
+                version=bld.env.VERSION[0],
+            ))
+
+info_plist_template = '''\
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+
+<plist version="1.0">
+  <dict>
+    <key>CFBundleExecutable</key>
+    <string>{dylib}</string>
+    <key>CFBundleInfoDictionaryVersion</key>
+    <string>6.0</string>
+    <key>CFBundleName</key>
+    <string>Bitrot {name} VST</string>
+    <key>CFBundleIdentifier</key>
+    <string>io.github.grejppi.bitrot.{name}</string>
+    <key>CFBundlePackageType</key>
+    <string>BNDL</string>
+    <key>CFBundleVersion</key>
+    <string>{version}</string>
+    <key>CSResourcesFileMapped</key>
+    <true/>
+    <key>CFBundleSignature</key>
+    <string>????</string>
+  </dict>
+</plist>
+'''
